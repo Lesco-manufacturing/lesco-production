@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f1624">
+<title>Lesco Production Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;height:100%}
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:#0f1624;
+  color:#e8ecf0;
+  padding-bottom:48px;
+  min-height:100vh;
+}
+
+/* ── CSS VARIABLES ── */
+:root{
+  --navy:     #0f1624;
+  --card:     #182035;
+  --card2:    #1e2840;
+  --border:   #2a3550;
+  --red:      #d42b2b;
+  --red-soft: #f05050;
+  --teal:     #4DC8D0;
+  --white:    #f0f4f8;
+  --muted:    #6b7a99;
+  --green:    #22c55e;
+  --amber:    #f59e0b;
+  --danger:   #ef4444;
+  --sp:       #2E8B57;
+  --cr:       #2563EB;
+  --radius:   12px;
+  --radius-sm:8px;
+}
+
+/* ── HEADER ── */
+.header{
+  background:var(--navy);
+  border-bottom:1px solid var(--border);
+  padding:14px 16px 0;
+  position:sticky;top:0;z-index:100;
+}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-icon{
+  width:32px;height:32px;
+  background:var(--red);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff;font-family:'DM Mono',monospace;
+  letter-spacing:-.04em;
+  flex-shrink:0;
+}
+.header h1{font-size:15px;font-weight:600;color:var(--white);letter-spacing:-.01em}
+.header-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.clock-block{text-align:right}
+.header-time{font-size:16px;font-weight:700;color:var(--teal);font-family:'DM Mono',monospace;letter-spacing:.04em}
+.header-date{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* ── DEPT TOGGLE ── */
+.dept-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:var(--radius-sm) var(--radius-sm) 0 0;overflow:hidden;border:1px solid var(--border);border-bottom:none;margin-top:4px}
+.dept-btn{
+  padding:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;
+  background:var(--card);color:var(--muted);
+  transition:all .2s;letter-spacing:.02em;text-transform:uppercase;font-size:12px;
+}
+.dept-btn.active-sp{background:var(--sp);color:#fff}
+.dept-btn.active-cr{background:var(--cr);color:#fff}
+
+/* ── TABS ── */
+.tabs{
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:103px;z-index:99;
+}
+.tab{
+  padding:13px 12px;text-align:center;font-size:13px;font-weight:500;
+  color:var(--muted);border:none;background:transparent;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.01em;
+}
+.tab.active{color:var(--white);border-bottom-color:var(--red)}
+
+/* ── PANE & SECTIONS ── */
+.pane{padding:12px}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:10px;
+  border:1px solid var(--border);
+}
+.section-title{
+  font-size:11px;font-weight:600;
+  color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:6px;
+}
+.section-title::before{
+  content:'';width:3px;height:14px;
+  background:var(--red);border-radius:2px;display:inline-block;
+}
+
+/* ── FIELDS ── */
+.field{margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{
+  display:block;font-size:12px;font-weight:500;
+  color:var(--muted);margin-bottom:6px;letter-spacing:.02em;text-transform:uppercase;font-size:11px;
+}
+.field input,.field select,.field textarea{
+  width:100%;font-size:15px;padding:11px 13px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  background:var(--card2);
+  color:var(--white);
+  -webkit-appearance:none;outline:none;
+  transition:border-color .15s;
+  font-family:'DM Sans',sans-serif;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--teal);
+}
+.field select option{background:var(--card2);color:var(--white)}
+.field input.num{
+  font-size:28px;font-weight:700;text-align:center;
+  padding:14px;color:var(--white);
+  font-family:'DM Mono',monospace;
+  letter-spacing:-.02em;
+}
+.field textarea{resize:none;font-size:14px;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.kpi-card{
+  background:var(--navy);
+  border-radius:var(--radius-sm);
+  padding:12px;
+  border:1px solid var(--border);
+}
+.kpi-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.kpi-val{font-size:24px;font-weight:700;color:var(--white);font-family:'DM Mono',monospace}
+.kpi-val.good{color:var(--green)}
+.kpi-val.warn{color:var(--amber)}
+.kpi-val.bad{color:var(--danger)}
+
+/* ── BUTTONS ── */
+.btn{
+  width:100%;padding:15px;font-size:15px;font-weight:600;
+  border-radius:var(--radius);border:none;cursor:pointer;
+  transition:opacity .15s,transform .1s;color:#fff;
+  margin-top:4px;font-family:'DM Sans',sans-serif;letter-spacing:.01em;
+}
+.btn:active{opacity:.85;transform:scale(.99)}
+.btn-save{background:var(--red)}
+.btn-save.sp{background:var(--sp)}
+.btn-save.cr{background:var(--cr)}
+.btn-wa{
+  background:#25D366;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:14px;font-size:15px;font-weight:600;
+  border-radius:var(--radius);border:none;cursor:pointer;color:#fff;
+  margin-top:8px;font-family:'DM Sans',sans-serif;
+  transition:opacity .15s;
+}
+.btn-wa:active{opacity:.85}
+.btn-outline{
+  background:transparent;border:1.5px solid var(--border);
+  color:var(--muted);font-size:13px;padding:11px;
+  border-radius:var(--radius-sm);cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-weight:500;
+  transition:border-color .15s,color .15s;
+}
+.btn-outline:hover{border-color:var(--teal);color:var(--teal)}
+.btn-danger-outline{
+  background:transparent;border:1.5px solid #7f1d1d;
+  color:#f87171;font-size:13px;padding:11px;
+  border-radius:var(--radius-sm);cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-weight:500;
+  transition:border-color .15s;
+}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+
+/* ── STATUS MESSAGES ── */
+.success{
+  background:#052e16;border:1px solid #166534;
+  border-radius:var(--radius);padding:14px;
+  text-align:center;margin-bottom:12px;
+}
+.success-title{font-size:15px;font-weight:600;color:var(--green)}
+.success-sub{font-size:12px;color:#4ade80;margin-top:4px}
+.error{
+  background:#450a0a;border:1px solid #991b1b;
+  border-radius:var(--radius);padding:12px;
+  margin-bottom:12px;font-size:13px;color:#f87171;font-weight:500;
+}
+.sending{
+  background:#0c1a3d;border:1px solid #1d4ed8;
+  border-radius:var(--radius);padding:14px;
+  text-align:center;margin-bottom:12px;font-size:14px;color:#93c5fd;
+}
+
+/* ── SHIFT LOG ── */
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sum-card{background:var(--navy);border-radius:var(--radius-sm);padding:11px 13px;border:1px solid var(--border)}
+.sum-lbl{font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em}
+.sum-val{font-size:22px;font-weight:700;color:var(--white);font-family:'DM Mono',monospace}
+.log-entry{
+  background:var(--card);border-radius:var(--radius-sm);
+  padding:12px 14px;margin-bottom:8px;
+  border:1px solid var(--border);
+  border-left:3px solid var(--teal);
+}
+.log-time{font-size:11px;color:var(--muted);margin-bottom:4px;font-family:'DM Mono',monospace}
+.log-body{font-size:14px;font-weight:600;color:var(--white);line-height:1.5}
+.log-pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.pill{
+  font-size:11px;padding:3px 9px;border-radius:20px;
+  background:var(--navy);color:var(--muted);
+  border:1px solid var(--border);font-family:'DM Mono',monospace;
+}
+.pill.good{background:#052e16;color:#4ade80;border-color:#166534}
+.pill.warn{background:#422006;color:#fbbf24;border-color:#92400e}
+.pill.bad{background:#450a0a;color:#f87171;border-color:#991b1b}
+.empty{text-align:center;padding:48px 16px;color:var(--muted);font-size:14px}
+
+/* ── WA PREVIEW ── */
+.wa-preview{
+  background:#052e16;border-radius:var(--radius-sm);
+  padding:14px;font-size:12px;color:#4ade80;
+  white-space:pre-wrap;line-height:1.7;
+  font-family:'DM Mono',monospace;
+  margin-bottom:10px;border:1px solid #166534;
+  word-break:break-word;max-height:240px;overflow-y:auto;
+}
+
+/* ── SPINNER ── */
+.spinner{
+  display:inline-block;width:16px;height:16px;
+  border:2px solid rgba(147,197,253,.3);
+  border-top-color:#93c5fd;border-radius:50%;
+  animation:spin .7s linear infinite;
+  vertical-align:middle;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── OFFLINE INDICATOR ── */
+.offline-bar{
+  background:#450a0a;border-bottom:1px solid #991b1b;
+  padding:6px 16px;font-size:12px;color:#f87171;
+  text-align:center;display:none;font-weight:500;
+}
+.offline-bar.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- Offline warning bar -->
+<div class="offline-bar" id="offline-bar">⚠ No internet connection — entries will be saved locally</div>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo-row">
+      <div class="logo-icon">L</div>
+      <div>
+        <h1>Production Log</h1>
+        <div class="header-sub">Lesco Manufacturing</div>
+      </div>
+    </div>
+    <div class="clock-block">
+      <div class="header-time" id="clock">--:--</div>
+      <div class="header-date" id="dateline"></div>
+    </div>
+  </div>
+  <div class="dept-toggle">
+    <button class="dept-btn active-sp" id="btn-sp" onclick="setDept('SP')">SP Department</button>
+    <button class="dept-btn" id="btn-cr" onclick="setDept('CR')">CR Department</button>
+  </div>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabs">
+  <button class="tab active" id="tab-form" onclick="showTab('form')">Log entry</button>
+  <button class="tab" id="tab-log" onclick="showTab('log')">Shift log <span id="log-count"></span></button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- FORM PANE -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="pane-form" class="pane">
+
+  <!-- Shift Setup -->
+  <div class="section">
+    <div class="section-title">Shift setup</div>
+    <div class="row2">
+      <div class="field">
+        <label>Production line</label>
+        <select id="line-select"></select>
+      </div>
+      <div class="field">
+        <label>Shift</label>
+        <select id="shift-select">
+          <option value="Day">Day</option>
+          <option value="Night">Night</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Line leader</label>
+        <input type="text" id="line-leader" placeholder="Full name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Target qty</label>
+        <input type="number" id="target-qty" placeholder="0" min="0" inputmode="numeric" class="num" style="font-size:20px;padding:11px">
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Run -->
+  <div class="section">
+    <div class="section-title">Product run</div>
+    <div class="field">
+      <label>Stock code</label>
+      <input type="text" id="stock-code" placeholder="e.g. D0744"
+        autocomplete="off" autocorrect="off" autocapitalize="characters"
+        style="font-size:20px;font-weight:700;letter-spacing:.06em;font-family:'DM Mono',monospace">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Time started</label>
+        <input type="time" id="time-start">
+      </div>
+      <div class="field">
+        <label>Time ended</label>
+        <input type="time" id="time-end" onchange="updateKPIs()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Production Counts -->
+  <div class="section">
+    <div class="section-title">Production counts</div>
+    <div class="row2">
+      <div class="field">
+        <label>Full asm</label>
+        <input type="number" id="full-asm" placeholder="0" min="0" inputmode="numeric" class="num" oninput="updateKPIs()">
+      </div>
+      <div class="field">
+        <label>Pre-asm</label>
+        <input type="number" id="pre-asm" placeholder="0" min="0" inputmode="numeric" class="num">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Partial asm</label>
+        <input type="number" id="partial-asm" placeholder="0" min="0" inputmode="numeric" class="num">
+      </div>
+      <div class="field">
+        <label>Scrap units</label>
+        <input type="number" id="scrap" placeholder="0" min="0" inputmode="numeric" class="num" oninput="updateKPIs()">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Rework units</label>
+        <input type="number" id="rework" placeholder="0" min="0" inputmode="numeric" class="num" oninput="updateKPIs()">
+      </div>
+      <div class="field">
+        <label>Downtime (mins)</label>
+        <input type="number" id="downtime" placeholder="0" min="0" inputmode="numeric" class="num" oninput="updateKPIs()">
+      </div>
+    </div>
+    <div class="field" style="margin-top:4px">
+      <label>Downtime reason</label>
+      <input type="text" id="dt-reason" placeholder="e.g. Conveyor jam">
+    </div>
+
+    <!-- Live KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-lbl">First pass yield</div>
+        <div class="kpi-val" id="kpi-fpy">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Scrap rate</div>
+        <div class="kpi-val" id="kpi-scrap">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Rework rate</div>
+        <div class="kpi-val" id="kpi-rework">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Downtime %</div>
+        <div class="kpi-val" id="kpi-dt">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign-off -->
+  <div class="section">
+    <div class="section-title">Sign-off</div>
+    <div class="row2">
+      <div class="field">
+        <label>Backflushed (SYSPRO)?</label>
+        <select id="backflushed">
+          <option value="">Not yet</option>
+          <option value="Yes">Yes</option>
+          <option value="No — pending">No — pending</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>PM initials</label>
+        <input type="text" id="pm-initials" placeholder="e.g. DI"
+          style="text-transform:uppercase;font-size:22px;font-weight:700;text-align:center;font-family:'DM Mono',monospace">
+      </div>
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="notes" rows="2" placeholder="Issues, handover notes..."></textarea>
+    </div>
+  </div>
+
+  <!-- Status messages -->
+  <div id="success-msg" style="display:none">
+    <div class="success">
+      <div class="success-title">✓ Entry saved to Google Sheet</div>
+      <div class="success-sub" id="success-detail"></div>
+    </div>
+  </div>
+  <div id="error-msg" style="display:none" class="error"></div>
+  <div id="sending-msg" style="display:none" class="sending">
+    <span class="spinner"></span>Saving to Google Sheet...
+  </div>
+
+  <button class="btn btn-save sp" id="btn-save" onclick="submitEntry()">Save run to Google Sheet</button>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- SHIFT LOG PANE -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="pane-log" class="pane" style="display:none">
+
+  <div id="log-summary" style="display:none">
+    <div class="section">
+      <div class="section-title">Shift totals</div>
+      <div class="sum-grid">
+        <div class="sum-card"><div class="sum-lbl">Total full asm</div><div class="sum-val" id="sum-full">0</div></div>
+        <div class="sum-card"><div class="sum-lbl">Total scrap</div><div class="sum-val" id="sum-scrap">0</div></div>
+        <div class="sum-card"><div class="sum-lbl">Total rework</div><div class="sum-val" id="sum-rework">0</div></div>
+        <div class="sum-card"><div class="sum-lbl">Overall FPY</div><div class="sum-val" id="sum-fpy">—</div></div>
+      </div>
+
+      <div id="wa-preview-box" style="display:none">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Message preview</div>
+        <div class="wa-preview" id="wa-preview-text"></div>
+      </div>
+
+      <button class="btn-wa" onclick="shareWhatsApp()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+        Send shift report via WhatsApp
+      </button>
+
+      <div class="btn-row">
+        <button class="btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn-danger-outline" onclick="clearLog()">🗑 Clear log</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="log-entries"></div>
+  <div class="empty" id="log-empty">
+    <div style="font-size:40px;margin-bottom:10px">📋</div>
+    No entries yet.<br>Log your first production run.
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- JAVASCRIPT -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────────────────────────
+// ⚙️  STEP 1 OF 1: Paste your Apps Script Web App URL below.
+//     Replace everything between the single quotes.
+//     It should look like: https://script.google.com/macros/s/ABC.../exec
+// ─────────────────────────────────────────────────────────────────
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+// ─────────────────────────────────────────────────────────────────
+
+let dept = 'SP', entries = [];
+
+const SP_LINES = ['SP Line 1','SP Line 2','SP Line 3','SP Line 4'];
+const CR_LINES = [
+  'CR Line 1','CR Line 2','CR Line 3','CR Line 4','CR Line 5',
+  'CR Line 6','CR Line 7','CR Line 8','CR Line 9','Automation Line'
+];
+
+// ── Offline detection ─────────────────────────────────────────────
+window.addEventListener('online',  () => document.getElementById('offline-bar').classList.remove('show'));
+window.addEventListener('offline', () => document.getElementById('offline-bar').classList.add('show'));
+if (!navigator.onLine) document.getElementById('offline-bar').classList.add('show');
+
+// ── Department toggle ─────────────────────────────────────────────
+function setDept(d) {
+  dept = d;
+  document.getElementById('btn-sp').className = 'dept-btn' + (d === 'SP' ? ' active-sp' : '');
+  document.getElementById('btn-cr').className = 'dept-btn' + (d === 'CR' ? ' active-cr' : '');
+  document.getElementById('btn-save').className = 'btn btn-save ' + d.toLowerCase();
+  const sel = document.getElementById('line-select');
+  sel.innerHTML = '<option value="">Select line...</option>';
+  (d === 'SP' ? SP_LINES : CR_LINES).forEach(l => {
+    const o = document.createElement('option');
+    o.value = l; o.textContent = l; sel.appendChild(o);
+  });
+}
+
+// ── Live KPI calculator ────────────────────────────────────────────
+function updateKPIs() {
+  const fa = parseInt(document.getElementById('full-asm').value)  || 0;
+  const sc = parseInt(document.getElementById('scrap').value)     || 0;
+  const rw = parseInt(document.getElementById('rework').value)    || 0;
+  const dt = parseInt(document.getElementById('downtime').value)  || 0;
+  const total = fa + sc + rw;
+
+  const set = (id, val, cls) => {
+    const el = document.getElementById(id);
+    el.textContent = val;
+    el.className = 'kpi-val' + cls;
+  };
+
+  if (total > 0) {
+    const fpy = Math.round(fa / total * 1000) / 10;
+    const sr  = Math.round(sc / total * 1000) / 10;
+    const rr  = Math.round(rw / total * 1000) / 10;
+    set('kpi-fpy',    fpy.toFixed(1) + '%', fpy >= 95 ? ' good' : fpy >= 85 ? ' warn' : ' bad');
+    set('kpi-scrap',  sr.toFixed(1)  + '%', sr  <= 2  ? ' good' : sr  <= 5  ? ' warn' : ' bad');
+    set('kpi-rework', rr.toFixed(1)  + '%', rr  <= 3  ? ' good' : rr  <= 6  ? ' warn' : ' bad');
+  } else {
+    ['kpi-fpy','kpi-scrap','kpi-rework'].forEach(id => set(id, '—', ''));
+  }
+
+  const ts = document.getElementById('time-start').value;
+  const te = document.getElementById('time-end').value;
+  if (ts && te) {
+    const tm = (Number(te.split(':')[0]) * 60 + Number(te.split(':')[1]))
+             - (Number(ts.split(':')[0]) * 60 + Number(ts.split(':')[1]));
+    if (tm > 0) {
+      const dp = Math.round(dt / tm * 1000) / 10;
+      set('kpi-dt', dp.toFixed(1) + '%', dp <= 5 ? ' good' : dp <= 10 ? ' warn' : ' bad');
+    } else {
+      set('kpi-dt', '—', '');
+    }
+  } else {
+    set('kpi-dt', '—', '');
+  }
+}
+
+// ── Submit entry ───────────────────────────────────────────────────
+async function submitEntry() {
+  const line  = document.getElementById('line-select').value;
+  const stock = document.getElementById('stock-code').value.trim().toUpperCase();
+
+  if (!line)  { alert('Please select a production line.'); return; }
+  if (!stock) { alert('Please enter a stock code.');       return; }
+
+  const now = new Date();
+  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+  const entry = {
+    id:      Date.now(),
+    dept,    line,
+    shift:   document.getElementById('shift-select').value,
+    leader:  document.getElementById('line-leader').value.trim(),
+    tgt:     parseInt(document.getElementById('target-qty').value) || 0,
+    stock,
+    tstart:  document.getElementById('time-start').value,
+    tend:    document.getElementById('time-end').value,
+    fa:      parseInt(document.getElementById('full-asm').value)    || 0,
+    pre:     parseInt(document.getElementById('pre-asm').value)     || 0,
+    part:    parseInt(document.getElementById('partial-asm').value) || 0,
+    sc:      parseInt(document.getElementById('scrap').value)       || 0,
+    rw:      parseInt(document.getElementById('rework').value)      || 0,
+    dt:      parseInt(document.getElementById('downtime').value)    || 0,
+    dtr:     document.getElementById('dt-reason').value.trim(),
+    bf:      document.getElementById('backflushed').value,
+    pm:      document.getElementById('pm-initials').value.trim().toUpperCase(),
+    notes:   document.getElementById('notes').value.trim(),
+    loggedAt: timeStr,
+    date:     now.toLocaleDateString('en-ZA')
+  };
+
+  const total     = entry.fa + entry.sc + entry.rw;
+  entry.fpy       = total > 0 ? Math.round(entry.fa / total * 1000) / 10 : 0;
+  entry.scrapRate = total > 0 ? Math.round(entry.sc / total * 1000) / 10 : 0;
+
+  // UI: show sending state
+  document.getElementById('sending-msg').style.display = 'block';
+  document.getElementById('error-msg').style.display   = 'none';
+  document.getElementById('success-msg').style.display = 'none';
+  document.getElementById('btn-save').disabled = true;
+
+  try {
+    if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode:   'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+    }
+
+    entries.unshift(entry);
+    renderLog();
+    document.getElementById('sending-msg').style.display = 'none';
+    document.getElementById('success-detail').textContent =
+      line + ' · ' + stock + ' · ' + entry.fa.toLocaleString() + ' units · ' + timeStr;
+    document.getElementById('success-msg').style.display = 'block';
+    setTimeout(() => { document.getElementById('success-msg').style.display = 'none'; }, 4500);
+
+    // Reset run fields, keep shift setup
+    ['stock-code','time-end','full-asm','pre-asm','partial-asm',
+     'scrap','rework','downtime','dt-reason','notes','backflushed','pm-initials']
+      .forEach(id => { document.getElementById(id).value = ''; });
+    updateKPIs();
+
+    // Auto-advance start time
+    const n2 = new Date();
+    document.getElementById('time-start').value =
+      n2.getHours().toString().padStart(2,'0') + ':' + n2.getMinutes().toString().padStart(2,'0');
+
+  } catch (err) {
+    document.getElementById('sending-msg').style.display = 'none';
+    document.getElementById('error-msg').textContent =
+      '⚠ Could not reach Google Sheet. Entry saved locally — try again when connected.';
+    document.getElementById('error-msg').style.display = 'block';
+    entries.unshift(entry);
+    renderLog();
+  }
+
+  document.getElementById('btn-save').disabled = false;
+}
+
+// ── WhatsApp shift report ──────────────────────────────────────────
+function buildWAMessage() {
+  if (!entries.length) return '';
+  const e0  = entries[entries.length - 1];
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-ZA', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+  let totFa=0, totSc=0, totRw=0, totDt=0, totPre=0, totPart=0;
+  entries.forEach(e => { totFa+=e.fa; totSc+=e.sc; totRw+=e.rw; totDt+=e.dt; totPre+=e.pre; totPart+=e.part; });
+  const totAll = totFa + totSc + totRw;
+  const fpy    = totAll > 0 ? Math.round(totFa / totAll * 1000) / 10 : 0;
+  const sr     = totAll > 0 ? Math.round(totSc / totAll * 1000) / 10 : 0;
+  const tgt    = e0.tgt || 0;
+  const eff    = tgt > 0 ? Math.round(totFa / tgt * 1000) / 10 : null;
+  const bfAll  = entries.every(e => e.bf === 'Yes');
+  const leader = entries.find(e => e.leader)?.leader || '—';
+  const pm     = entries.find(e => e.pm)?.pm || '—';
+
+  const runs = entries.map((e, i) => {
+    const t    = e.fa + e.sc + e.rw;
+    const fpyR = t > 0 ? Math.round(e.fa / t * 1000) / 10 : 0;
+    return `  ${entries.length - i}. ${e.stock} (${e.tstart||'?'}–${e.tend||'?'})\n` +
+           `     Asm: ${e.fa} | Scrap: ${e.sc} | Rework: ${e.rw} | FPY: ${fpyR.toFixed(1)}%` +
+           (e.dt > 0 ? ` | DT: ${e.dt} mins` : '') +
+           (e.dtr ? ` (${e.dtr})` : '');
+  }).join('\n');
+
+  let msg  = `*LESCO MANUFACTURING*\n*Production Shift Report*\n`;
+  msg += `━━━━━━━━━━━━━━━━━\n`;
+  msg += `📅 ${dateStr}\n🏭 ${e0.dept} — ${e0.line}\n⏰ ${e0.shift} shift\n👤 Line Leader: ${leader}\n\n`;
+  msg += `*SHIFT TOTALS*\n━━━━━━━━━━━━━━━━━\n`;
+  msg += `✅ Full asm:   ${totFa.toLocaleString()} units\n`;
+  if (totPre  > 0) msg += `🔧 Pre-asm:    ${totPre.toLocaleString()} units\n`;
+  if (totPart > 0) msg += `🔄 Partial:    ${totPart.toLocaleString()} units\n`;
+  msg += `❌ Scrap:      ${totSc.toLocaleString()} units\n🔁 Rework:     ${totRw.toLocaleString()} units\n`;
+  if (totDt > 0) msg += `⏱ Downtime:   ${totDt} mins\n`;
+  msg += `\n*KPIs*\n━━━━━━━━━━━━━━━━━\n`;
+  msg += `📊 FPY:       ${fpy.toFixed(1)}%${fpy >= 95 ? ' ✅' : fpy >= 85 ? ' ⚠️' : ' 🔴'}\n`;
+  msg += `🗑 Scrap:     ${sr.toFixed(1)}%${sr <= 2 ? ' ✅' : sr <= 5 ? ' ⚠️' : ' 🔴'}\n`;
+  if (tgt > 0 && eff !== null) msg += `🎯 Efficiency: ${eff.toFixed(1)}% vs target ${tgt.toLocaleString()}\n`;
+  msg += `\n*PRODUCT RUNS (${entries.length})*\n━━━━━━━━━━━━━━━━━\n${runs}\n\n`;
+  msg += `*SIGN-OFF*\n━━━━━━━━━━━━━━━━━\n`;
+  msg += `🔄 Backflushed: ${bfAll ? 'Yes — all runs' : 'Pending'}\n✍️ PM sign-off: ${pm}\n`;
+  const hasNotes = entries.some(e => e.notes);
+  if (hasNotes) {
+    msg += `\n*Notes*\n`;
+    entries.filter(e => e.notes).forEach(e => { msg += `• ${e.stock}: ${e.notes}\n`; });
+  }
+  return msg;
+}
+
+function shareWhatsApp() {
+  if (!entries.length) { alert('No entries to share yet.'); return; }
+  const msg = buildWAMessage();
+  document.getElementById('wa-preview-text').textContent = msg;
+  document.getElementById('wa-preview-box').style.display = 'block';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ── Render shift log ───────────────────────────────────────────────
+function renderLog() {
+  const cont   = document.getElementById('log-entries');
+  const empty  = document.getElementById('log-empty');
+  const sumDiv = document.getElementById('log-summary');
+  const cnt    = document.getElementById('log-count');
+
+  cnt.textContent = entries.length ? `(${entries.length})` : '';
+
+  if (!entries.length) {
+    cont.innerHTML = ''; empty.style.display = 'block'; sumDiv.style.display = 'none'; return;
+  }
+  empty.style.display = 'none'; sumDiv.style.display = 'block';
+
+  let tFa=0, tSc=0, tRw=0;
+  entries.forEach(e => { tFa+=e.fa; tSc+=e.sc; tRw+=e.rw; });
+  document.getElementById('sum-full').textContent   = tFa.toLocaleString();
+  document.getElementById('sum-scrap').textContent  = tSc.toLocaleString();
+  document.getElementById('sum-rework').textContent = tRw.toLocaleString();
+  const tot = tFa + tSc + tRw;
+  document.getElementById('sum-fpy').textContent    = tot > 0 ? Math.round(tFa/tot*1000)/10 + '%' : '—';
+
+  cont.innerHTML = entries.map(e => {
+    const t   = e.fa + e.sc + e.rw;
+    const fpy = t > 0 ? Math.round(e.fa/t*1000)/10 : null;
+    const sr  = t > 0 ? Math.round(e.sc/t*1000)/10 : null;
+    const fpyClass = fpy === null ? '' : fpy >= 95 ? ' good' : fpy >= 85 ? ' warn' : ' bad';
+    return `<div class="log-entry">
+      <div class="log-time">${e.line} &nbsp;·&nbsp; ${e.date} ${e.loggedAt} &nbsp;·&nbsp; ${e.shift}</div>
+      <div class="log-body">${e.stock||'—'} &nbsp;·&nbsp; ${e.tstart||'—'}–${e.tend||'—'}${e.leader ? ' &nbsp;·&nbsp; ' + e.leader : ''}</div>
+      <div class="log-pills">
+        <span class="pill">${e.fa.toLocaleString()} asm</span>
+        <span class="pill">${e.sc} scrap</span>
+        <span class="pill">${e.rw} rework</span>
+        ${e.dt > 0 ? `<span class="pill">${e.dt} min DT</span>` : ''}
+        ${fpy !== null ? `<span class="pill${fpyClass}">FPY ${fpy.toFixed(1)}%</span>` : ''}
+        ${sr  !== null ? `<span class="pill">Scrap ${sr.toFixed(1)}%</span>` : ''}
+        ${e.bf ? `<span class="pill">BF: ${e.bf}</span>` : ''}
+        ${e.pm ? `<span class="pill">PM: ${e.pm}</span>` : ''}
+      </div>
+      ${e.notes ? `<div style="font-size:12px;color:var(--muted);margin-top:5px;font-style:italic">${e.notes}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── Tab switching ──────────────────────────────────────────────────
+function showTab(t) {
+  document.getElementById('pane-form').style.display = t === 'form' ? 'block' : 'none';
+  document.getElementById('pane-log').style.display  = t === 'log'  ? 'block' : 'none';
+  document.getElementById('tab-form').className = 'tab' + (t === 'form' ? ' active' : '');
+  document.getElementById('tab-log').className  = 'tab' + (t === 'log'  ? ' active' : '');
+}
+
+// ── CSV export ─────────────────────────────────────────────────────
+function exportCSV() {
+  if (!entries.length) { alert('No entries to export.'); return; }
+  const h = ['Date','Dept','Line','Shift','LineLeader','TargetQty','StockCode',
+             'TimeStart','TimeEnd','FullAsm','PreAsm','PartialAsm','Scrap','Rework',
+             'Downtime','DowntimeReason','Backflushed','PMInitials','FPY%','ScrapRate%','Notes','LoggedAt'];
+  const rows = entries.map(e => [
+    e.date, e.dept, e.line, e.shift, e.leader, e.tgt, e.stock,
+    e.tstart, e.tend, e.fa, e.pre, e.part, e.sc, e.rw, e.dt,
+    `"${e.dtr||''}"`, e.bf, e.pm, e.fpy, e.scrapRate, `"${e.notes||''}"`, e.loggedAt
+  ]);
+  const csv = [h.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const a   = document.createElement('a');
+  a.href    = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'Lesco_Production_' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+}
+
+// ── Clear log ──────────────────────────────────────────────────────
+function clearLog() {
+  if (!entries.length) return;
+  if (!confirm(`Clear all ${entries.length} entries from this session? This cannot be undone.`)) return;
+  entries = [];
+  document.getElementById('wa-preview-box').style.display = 'none';
+  renderLog();
+}
+
+// ── Live clock ─────────────────────────────────────────────────────
+function tick() {
+  const n = new Date();
+  document.getElementById('clock').textContent =
+    n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
+  const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('dateline').textContent =
+    days[n.getDay()] + ' ' + n.getDate() + ' ' + months[n.getMonth()] + ' ' + n.getFullYear();
+}
+
+// ── Init ───────────────────────────────────────────────────────────
+setDept('SP');
+tick();
+setInterval(tick, 30000);
+const n0 = new Date();
+document.getElementById('time-start').value =
+  n0.getHours().toString().padStart(2,'0') + ':' + n0.getMinutes().toString().padStart(2,'0');
+</script>
+</body>
+</html>
