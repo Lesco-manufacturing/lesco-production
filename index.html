@@ -500,7 +500,7 @@ body{
 //     Replace everything between the single quotes.
 //     It should look like: https://script.google.com/macros/s/ABC.../exec
 // ─────────────────────────────────────────────────────────────────
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5f2LxZmVLzK_QxEqpIpb9F2zXYQxK8MunZx_jl428w-6eoJWAMGFT0qsl7UfnL5Kj/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbya7ynemJU2y4ae1Deo4BYK4Ir7wolz1w1xelvTcLaXJI9DuKmFBWLuwAET9yLSgZu2/exec';
 // ─────────────────────────────────────────────────────────────────
 
 let dept = 'SP', entries = [];
@@ -616,7 +616,7 @@ async function submitEntry() {
   document.getElementById('btn-save').disabled = true;
 
   try {
-    if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbz5f2LxZmVLzK_QxEqpIpb9F2zXYQxK8MunZx_jl428w-6eoJWAMGFT0qsl7UfnL5Kj/exec') {
+    if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbya7ynemJU2y4ae1Deo4BYK4Ir7wolz1w1xelvTcLaXJI9DuKmFBWLuwAET9yLSgZu2/exec') {
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         mode:   'no-cors',
